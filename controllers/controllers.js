@@ -6,7 +6,7 @@ module.exports = function(app) {
   // GET route for scraping espn fantasy football
   app.get("/scrape", function(req, res) {
 
-    axios.get("http://www.espn.com/fantasy/football/").then(function(response) {
+    axios.get("https://www.nytimes.com/section/technology").then(function(response) {
 
       // Load the HTML into cheerio and save it to a variable
       // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
@@ -14,11 +14,11 @@ module.exports = function(app) {
       // empty result obj
       var result = {};
 
-      $(".item-info-wrap").each(function(i, element) {
+      $("div.story-body").each(function(i, element) {
         // add text and href and save them into result obj
-        result.title = $(element).find("h1").text();
-        result.link = $(element).find("h1").children().attr("href");
-        result.summary = $(element).find("p").text();
+        result.title = $(element).find("h2.headline").text().trim();
+        result.summary = $(element).find("p.summary").text().trim();
+        result.link = $(element).find("a").attr("href");
         //create new Article with result obj from scraping
         db.Article.create(result)
         .then(function(dbArticle) {
